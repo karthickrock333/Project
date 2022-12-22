@@ -1,0 +1,27 @@
+import firebase_admin
+from firebase_admin import credentials, storage
+import numpy as np
+import cv2
+import os
+import boto3
+
+
+cred = credentials.Certificate(r"C:\Users\DELL\Desktop\SQL\Firebase2022-1.json")
+app = firebase_admin.initialize_app(cred, { 'storageBucket' : 'pythoni1.appspot.com' })
+
+bucket = storage.bucket()
+blob = bucket.get_blob("logo1.jpg") #blob
+
+arr = np.frombuffer(blob.download_as_string(), np.uint8) #array of bytes
+img = cv2.imdecode(arr, cv2.IMREAD_COLOR) #actual image
+Act_Img = cv2.imwrite("result.jpg", img)
+cv2.imwrite(os.path.join(r'C:\Users\DELL\Desktop\SQL\sampleimg','img.jpg'),img)
+print('Image Extracted')
+
+session = boto3.Session(
+    aws_access_key_id='AKIA3QHS3KXM5C2344DO',
+    aws_secret_access_key='zEQ4WTEQHFijJaJlQZ/8Oy/lQowslBP2dMIlGVht',
+)
+s3 = session.resource('s3')
+print(s3)
+s3.meta.client.upload_file(Filename=img, Bucket='samplesimple', Key = 'New')
